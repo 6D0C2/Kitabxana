@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kitabxana İdarəetmə</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    /* ══════════════════════════════════════
+       CSS DEĞİŞKƏNLƏRİ - Rəng palitrası
+    ══════════════════════════════════════ */
+    :root {
+      --ink:        #1a1209;
+      --paper:      #faf6ef;
+      --cream:      #f2ead8;
+      --amber:      #c8843a;
+      --amber-light:#e8a85a;
+      --amber-dark: #9a5f20;
+      --sage:       #5a6e52;
+      --rust:       #b84c35;
+      --muted:      #7a6a55;
+      --border:     #ddd4c0;
+      --shadow:     rgba(26,18,9,0.12);
+    }
+
+    /* ══════════════════════════════════════
+       ƏSAS SIFIRLAMALAR
+    ══════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse at 20% 10%, rgba(200,132,58,0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 90%, rgba(90,110,82,0.05) 0%, transparent 50%);
+    }
+
+    /* ══════════════════════════════════════
+       HEADER - Başlıq bölməsi
+    ══════════════════════════════════════ */
+    header {
+      background: var(--ink);
+      padding: 28px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      background: var(--amber);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .logo-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.3px;
+    }
+
+    .logo-sub {
+      font-size: 11px;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .header-stats {
+      display: flex;
+      gap: 28px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      color: var(--amber);
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-top: 3px;
+    }
+
+    /* ══════════════════════════════════════
+       ANA LAYOUT
+    ══════════════════════════════════════ */
+    .layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      min-height: calc(100vh - 94px);
+    }
+
+    /* ──────────────────────────────────────
+       SOL PANEL - Form bölməsi
+    ────────────────────────────────────── */
+    .sidebar {
+      background: var(--cream);
+      border-right: 1px solid var(--border);
+      padding: 32px 28px;
+      overflow-y: auto;
+    }
+
+    .panel-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-title span { font-size: 20px; }
+
+    /* Tab düymələri */
+    .tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 28px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--paper);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 9px 6px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .tab-btn.active {
+      background: var(--ink);
+      color: var(--amber);
+    }
+
+    .tab-btn:hover:not(.active) {
+      background: var(--border);
+      color: var(--ink);
+    }
+
+    /* Form elementləri */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--amber);
+      box-shadow: 0 0 0 3px rgba(200,132,58,0.12);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    /* Düymələr */
+    .btn {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-primary {
+      background: var(--ink);
+      color: var(--amber);
+    }
+
+    .btn-primary:hover {
+      background: var(--amber-dark);
+      color: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px var(--shadow);
+    }
+
+    .btn-warning {
+      background: var(--amber);
+      color: #fff;
+    }
+
+    .btn-warning:hover {
+      background: var(--amber-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-danger {
+      background: var(--rust);
+      color: #fff;
+    }
+
+    .btn-danger:hover {
+      background: #8f3525;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--muted);
+      border: 1.5px solid var(--border);
+      margin-top: 8px;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--ink);
+      color: var(--ink);
+    }
+
+    /* Tab Panel-lər */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ID input xüsusi */
+    .id-input-wrap {
+      position: relative;
+    }
+
+    .id-badge {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 10px;
+      background: var(--amber);
+      color: #fff;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* ──────────────────────────────────────
+       SAĞ PANEL - Kitab siyahısı
+    ────────────────────────────────────── */
+    .main-content {
+      padding: 32px 36px;
+      overflow-y: auto;
+    }
+
+    .content-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+
+    .content-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--ink);
+    }
+
+    .search-wrap {
+      position: relative;
+      width: 260px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    #searchInput {
+      padding-left: 38px;
+      width: 100%;
+    }
+
+    /* Kitab kartları grid */
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    /* Tək kitab kartı */
+    .book-card {
+      background: var(--paper);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+      transition: all 0.25s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .book-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      background: var(--amber);
+      transform: scaleY(0);
+      transition: transform 0.2s;
+      transform-origin: bottom;
+    }
+
+    .book-card:hover {
+      border-color: var(--amber);
+      box-shadow: 0 8px 32px var(--shadow);
+      transform: translateY(-2px);
+    }
+
+    .book-card:hover::before {
+      transform: scaleY(1);
+    }
+
+    .book-id {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 8px;
+    }
+
+    .book-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .book-author {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .book-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .meta-tag {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+
+    .tag-year {
+      background: rgba(200,132,58,0.12);
+      color: var(--amber-dark);
+    }
+
+    .tag-genre {
+      background: rgba(90,110,82,0.12);
+      color: var(--sage);
+    }
+
+    .book-desc {
+      font-size: 12.5px;
+      color: var(--muted);
+      margin-top: 12px;
+      line-height: 1.6;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .card-btn {
+      flex: 1;
+      padding: 7px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .card-btn-edit {
+      background: rgba(200,132,58,0.12);
+      color: var(--amber-dark);
+    }
+
+    .card-btn-edit:hover {
+      background: var(--amber);
+      color: #fff;
+    }
+
+    .card-btn-delete {
+      background: rgba(184,76,53,0.1);
+      color: var(--rust);
+    }
+
+    .card-btn-delete:hover {
+      background: var(--rust);
+      color: #fff;
+    }
+
+    /* Boş vəziyyət */
+    .empty-state {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--muted);
+    }
+
+    .empty-icon {
+      font-size: 56px;
+      margin-bottom: 16px;
+      opacity: 0.4;
+    }
+
+    .empty-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .empty-sub {
+      font-size: 14px;
+    }
+
+    /* Bildiriş tostları */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      padding: 14px 22px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #fff;
+      z-index: 9999;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      max-width: 320px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    #toast.success { background: var(--sage); }
+    #toast.error   { background: var(--rust); }
+    #toast.info    { background: var(--amber-dark); }
+
+    /* Loading göstəricisi */
+    .loading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 20px;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--amber);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Ayırıcı xətt */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
+    }
+
+    /* Seçilmiş kitab haşiyəsi */
+    .book-card.selected {
+      border-color: var(--amber);
+      background: rgba(200,132,58,0.04);
+      box-shadow: 0 0 0 3px rgba(200,132,58,0.15);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      header { padding: 20px; }
+      .header-stats { display: none; }
+      .main-content { padding: 24px 20px; }
+      .sidebar { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════
+       HEADER - Yuxarı bar
+  ══════════════════════════════════════ -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">📚</div>
+      <div>
+        <div class="logo-text">Kitabxana</div>
+        <div class="logo-sub">İdarəetmə Sistemi</div>
+      </div>
+    </div>
+    <div class="header-stats">
+      <div class="stat">
+        <div class="stat-num" id="totalCount">0</div>
+        <div class="stat-label">Kitab</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════
+       ANA LAYOUT - Sol panel + Sağ panel
+  ══════════════════════════════════════ -->
+  <div class="layout">
+
+    <!-- ──────────────────────────────────
+         SOL PANEL - Əməliyyat formaları
+    ────────────────────────────────────── -->
+    <aside class="sidebar">
+      <div class="panel-title">
+        <span>⚙️</span> Əməliyyatlar
+      </div>
+
+      <!-- Tab düymələri: Əlavə et / Yenilə / Sil / Tap -->
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('create')">＋ Əlavə</button>
+        <button class="tab-btn" onclick="switchTab('update')">✎ Yenilə</button>
+        <button class="tab-btn" onclick="switchTab('delete')">✕ Sil</button>
+        <button class="tab-btn" onclick="switchTab('get')">🔍 Tap</button>
+      </div>
+
+      <!-- ── TAB 1: Yeni Kitab Əlavə Et ── -->
+      <div id="tab-create" class="tab-panel active">
+        <div class="form-group">
+          <label>Kitabın Adı *</label>
+          <input id="c-title" type="text" placeholder="məs. Harry Potter"/>
+        </div>
+        <div class="form-group">
+          <label>Müəllif *</label>
+          <input id="c-author" type="text" placeholder="məs. J.K. Rowling"/>
+        </div>
+        <div class="form-group">
+          <label>Nəşr İli *</label>
+          <input id="c-year" type="number" placeholder="məs. 1997" min="1000" max="2099"/>
+        </div>
+        <div class="form-group">
+          <label>Janr</label>
+          <input id="c-genre" type="text" placeholder="məs. Fantaziya"/>
+        </div>
+        <div class="form-group">
+          <label>Qısa Təsvir</label>
+          <textarea id="c-desc" placeholder="Kitab haqqında qısa məlumat..."></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="createBook()">📖 Kitab Əlavə Et</button>
+      </div>
+
+      <!-- ── TAB 2: Kitabı Yenilə ── -->
+      <div id="tab-update" class="tab-panel">
+        <div class="form-group">
+          <label>Kitab ID *</label>
+          <div class="id-input-wrap">
+            <input id="u-id" type="number" placeholder="Yeniləmək istədiyiniz kitabın ID-si" min="1"/>
+            <span class="id-badge">ID</span>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:16px;">Yalnız dəyişdirmək istədiyiniz sahələri doldurun</p>
+        <div class="form-group">
+          <label>Yeni Ad</label>
+          <input id="u-title" type="text" placeholder="Boş buraxsanız dəyişmir"/>
+        </div>
+        <div class="form-group">
+          <label>Yeni Müəllif</label>
+          <input id="u-author" type="text" placeholder="Boş buraxsanız dəyişmir"/>
+        </div>
+        <div class="form-group">
+          <label>Yeni İl</label>
+          <input id="u-year" type="number" placeholder="Boş buraxsanız dəyişmir"/>
+        </div>
+        <div class="form-group">
+          <label>Yeni Janr</label>
+          <input id="u-genre" type="text" placeholder="Boş buraxsanız dəyişmir"/>
+        </div>
+        <div class="form-group">
+          <label>Yeni Təsvir</label>
+          <textarea id="u-desc" placeholder="Boş buraxsanız dəyişmir"></textarea>
+        </div>
+        <button class="btn btn-warning" onclick="updateBook()">✎ Kitabı Yenilə</button>
+        <button class="btn btn-secondary" onclick="clearUpdateForm()">Formu Sıfırla</button>
+      </div>
+
+      <!-- ── TAB 3: Kitabı Sil ── -->
+      <div id="tab-delete" class="tab-panel">
+        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6;">
+          Silmək istədiyiniz kitabın ID-sini daxil edin. Bu əməliyyat geri alına bilməz.
+        </p>
+        <div class="form-group">
+          <label>Kitab ID *</label>
+          <div class="id-input-wrap">
+            <input id="d-id" type="number" placeholder="Silmək istədiyiniz kitabın ID-si" min="1"/>
+            <span class="id-badge">ID</span>
+          </div>
+        </div>
+        <button class="btn btn-danger" onclick="deleteBook()">🗑️ Kitabı Sil</button>
+      </div>
+
+      <!-- ── TAB 4: Kitabı ID ilə Tap ── -->
+      <div id="tab-get" class="tab-panel">
+        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6;">
+          Axtarmaq istədiyiniz kitabın ID-sini daxil edin.
+        </p>
+        <div class="form-group">
+          <label>Kitab ID *</label>
+          <div class="id-input-wrap">
+            <input id="g-id" type="number" placeholder="Kitabın ID-si" min="1"/>
+            <span class="id-badge">ID</span>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="getBook()">🔍 Kitabı Tap</button>
+
+        <!-- Tapılan kitabın nəticəsi -->
+        <div id="getResult" style="display:none;margin-top:20px;padding:18px;background:var(--paper);border:1.5px solid var(--amber);border-radius:10px;">
+          <div id="getResultContent"></div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ──────────────────────────────────
+         SAĞ PANEL - Kitablar siyahısı
+    ────────────────────────────────────── -->
+    <main class="main-content">
+      <div class="content-header">
+        <div class="content-title">Bütün Kitablar</div>
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input id="searchInput" type="text" placeholder="Kitab axtar..." oninput="filterBooks()"/>
+        </div>
+      </div>
+
+      <!-- Kitab kartlarının yerləşdiyi grid -->
+      <div class="books-grid" id="booksGrid">
+        <div class="loading"><div class="spinner"></div> Yüklənir...</div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Bildiriş tostu -->
+  <div id="toast"></div>
+
+  <!-- ══════════════════════════════════════
+       JAVASCRIPT - Bütün əməliyyatlar
+  ══════════════════════════════════════ -->
+  <script>
+    // ──────────────────────────────────────
+    // Global dəyişənlər
+    // ──────────────────────────────────────
+    let allBooks = [];        // Bütün kitabları saxlayan massiv
+    let filteredBooks = [];   // Axtarış nəticəsi
+
+    // ──────────────────────────────────────
+    // TOAST BİLDİRİŞİ - Ekranda mesaj göstər
+    // type: 'success' | 'error' | 'info'
+    // ──────────────────────────────────────
+    function showToast(msg, type = 'success') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `show ${type}`;
+      setTimeout(() => { t.className = ''; }, 3000);
+    }
+
+    // ──────────────────────────────────────
+    // TAB DEĞİŞDİR - Sol paneldəki tabları idarə et
+    // ──────────────────────────────────────
+    function switchTab(name) {
+      // Bütün tabları deaktiv et
+      document.querySelectorAll('.tab-btn').forEach((b, i) => {
+        b.classList.toggle('active', ['create','update','delete','get'][i] === name);
+      });
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('tab-' + name).classList.add('active');
+    }
+
+    // ──────────────────────────────────────
+    // KİTABLARI YÜKLƏ - API-dan bütün kitabları al
+    // ──────────────────────────────────────
+    async function loadBooks() {
+      try {
+        const res = await fetch('/books');          // GET /books sorğusu
+        allBooks = await res.json();                // JSON cavabını massivə çevir
+        filteredBooks = [...allBooks];
+        renderBooks(filteredBooks);                 // Ekrana çıxar
+        document.getElementById('totalCount').textContent = allBooks.length;
+      } catch (e) {
+        showToast('Kitablar yüklənə bilmədi!', 'error');
+      }
+    }
+
+    // ──────────────────────────────────────
+    // KİTABLARI RENDER ET - HTML kartlar yarat
+    // ──────────────────────────────────────
+    function renderBooks(books) {
+      const grid = document.getElementById('booksGrid');
+
+      if (books.length === 0) {
+        // Kitab yoxdursa boş vəziyyət göstər
+        grid.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <div class="empty-text">Heç bir kitab tapılmadı</div>
+            <div class="empty-sub">Sol paneldən yeni kitab əlavə edin</div>
+          </div>`;
+        return;
+      }
+
+      // Hər kitab üçün kart yarat
+      grid.innerHTML = books.map(b => `
+        <div class="book-card" id="card-${b.id}" onclick="selectBook(${b.id})">
+          <div class="book-id">№ ${b.id}</div>
+          <div class="book-title">${escHtml(b.title)}</div>
+          <div class="book-author">✍️ ${escHtml(b.author)}</div>
+          <div class="book-meta">
+            <span class="meta-tag tag-year">📅 ${b.year}</span>
+            ${b.genre ? `<span class="meta-tag tag-genre">🏷️ ${escHtml(b.genre)}</span>` : ''}
+          </div>
+          ${b.description ? `<div class="book-desc">${escHtml(b.description)}</div>` : ''}
+          <div class="card-actions" onclick="event.stopPropagation()">
+            <button class="card-btn card-btn-edit" onclick="prefillUpdate(${b.id})">✎ Yenilə</button>
+            <button class="card-btn card-btn-delete" onclick="confirmDelete(${b.id})">🗑 Sil</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ──────────────────────────────────────
+    // HTML SÜZGƏCİ - XSS hücumlarının qarşısını al
+    // ──────────────────────────────────────
+    function escHtml(str) {
+      const d = document.createElement('div');
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    // ──────────────────────────────────────
+    // AXTAR - Kitab adına görə süzgəc
+    // ──────────────────────────────────────
+    function filterBooks() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      filteredBooks = allBooks.filter(b =>
+        b.title.toLowerCase().includes(q) ||
+        b.author.toLowerCase().includes(q) ||
+        (b.genre && b.genre.toLowerCase().includes(q))
+      );
+      renderBooks(filteredBooks);
+    }
+
+    // ──────────────────────────────────────
+    // KİTAB SEÇ - Karta kliklədikdə seçilmiş göstər
+    // ──────────────────────────────────────
+    function selectBook(id) {
+      document.querySelectorAll('.book-card').forEach(c => c.classList.remove('selected'));
+      const card = document.getElementById('card-' + id);
+      if (card) card.classList.add('selected');
+    }
+
+    // ──────────────────────────────────────
+    // YENİ KİTAB ƏLAVƏ ET - POST /books
+    // ──────────────────────────────────────
+    async function createBook() {
+      const title  = document.getElementById('c-title').value.trim();
+      const author = document.getElementById('c-author').value.trim();
+      const year   = parseInt(document.getElementById('c-year').value);
+      const genre  = document.getElementById('c-genre').value.trim();
+      const desc   = document.getElementById('c-desc').value.trim();
+
+      // Məcburi sahələri yoxla
+      if (!title || !author || !year) {
+        showToast('Ad, müəllif və il məcburidir!', 'error'); return;
+      }
+
+      try {
+        const res = await fetch('/books', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, author, year, genre: genre || null, description: desc || null })
+        });
+
+        if (!res.ok) { showToast('Xəta baş verdi!', 'error'); return; }
+
+        const data = await res.json();
+        showToast(`"${title}" kitabı əlavə edildi! (ID: ${data.id})`, 'success');
+
+        // Formu təmizlə
+        ['c-title','c-author','c-year','c-genre','c-desc'].forEach(id => document.getElementById(id).value = '');
+        await loadBooks();  // Siyahını yenilə
+      } catch (e) {
+        showToast('Bağlantı xətası!', 'error');
+      }
+    }
+
+    // ──────────────────────────────────────
+    // KİTABI YENİLƏ - PUT /books/{id}
+    // ──────────────────────────────────────
+    async function updateBook() {
+      const id     = parseInt(document.getElementById('u-id').value);
+      const title  = document.getElementById('u-title').value.trim();
+      const author = document.getElementById('u-author').value.trim();
+      const year   = document.getElementById('u-year').value;
+      const genre  = document.getElementById('u-genre').value.trim();
+      const desc   = document.getElementById('u-desc').value.trim();
+
+      if (!id) { showToast('Kitab ID-sini daxil edin!', 'error'); return; }
+
+      // Yalnız doldurulmuş sahələri göndər
+      const payload = {};
+      if (title)  payload.title  = title;
+      if (author) payload.author = author;
+      if (year)   payload.year   = parseInt(year);
+      if (genre)  payload.genre  = genre;
+      if (desc)   payload.description = desc;
+
+      if (Object.keys(payload).length === 0) {
+        showToast('Ən azı bir sahə doldurun!', 'error'); return;
+      }
+
+      try {
+        const res = await fetch(`/books/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.status === 404) { showToast(`ID=${id} olan kitab tapılmadı!`, 'error'); return; }
+        if (!res.ok)            { showToast('Yeniləmə xətası!', 'error'); return; }
+
+        showToast(`Kitab uğurla yeniləndi!`, 'success');
+        clearUpdateForm();
+        await loadBooks();
+      } catch (e) {
+        showToast('Bağlantı xətası!', 'error');
+      }
+    }
+
+    // ──────────────────────────────────────
+    // YENİLƏMƏ FORMUNU ÖNCƏDƏNDOLDURma
+    // Kart üzərindəki "Yenilə" düyməsi üçün
+    // ──────────────────────────────────────
+    function prefillUpdate(id) {
+      const book = allBooks.find(b => b.id === id);
+      if (!book) return;
+      switchTab('update');
+      document.getElementById('u-id').value     = book.id;
+      document.getElementById('u-title').value  = book.title;
+      document.getElementById('u-author').value = book.author;
+      document.getElementById('u-year').value   = book.year;
+      document.getElementById('u-genre').value  = book.genre  || '';
+      document.getElementById('u-desc').value   = book.description || '';
+    }
+
+    function clearUpdateForm() {
+      ['u-id','u-title','u-author','u-year','u-genre','u-desc'].forEach(id => document.getElementById(id).value = '');
+    }
+
+    // ──────────────────────────────────────
+    // KİTABI SİL - DELETE /books/{id}
+    // ──────────────────────────────────────
+    async function deleteBook() {
+      const id = parseInt(document.getElementById('d-id').value);
+      if (!id) { showToast('Kitab ID-sini daxil edin!', 'error'); return; }
+      await performDelete(id);
+      document.getElementById('d-id').value = '';
+    }
+
+    // Kart üzərindəki "Sil" düyməsi üçün təsdiq
+    function confirmDelete(id) {
+      const book = allBooks.find(b => b.id === id);
+      if (!book) return;
+      if (confirm(`"${book.title}" kitabını silmək istədiyinizə əminsiniz?`)) {
+        performDelete(id);
+      }
+    }
+
+    async function performDelete(id) {
+      try {
+        const res = await fetch(`/books/${id}`, { method: 'DELETE' });
+
+        if (res.status === 404) { showToast(`ID=${id} olan kitab tapılmadı!`, 'error'); return; }
+        if (!res.ok)            { showToast('Silmə xətası!', 'error'); return; }
+
+        showToast(`Kitab silindi!`, 'info');
+        await loadBooks();
+      } catch (e) {
+        showToast('Bağlantı xətası!', 'error');
+      }
+    }
+
+    // ──────────────────────────────────────
+    // KİTABI TAP - GET /books/{id}
+    // ──────────────────────────────────────
+    async function getBook() {
+      const id = parseInt(document.getElementById('g-id').value);
+      if (!id) { showToast('Kitab ID-sini daxil edin!', 'error'); return; }
+
+      try {
+        const res = await fetch(`/books/${id}`);
+
+        if (res.status === 404) {
+          showToast(`ID=${id} olan kitab tapılmadı!`, 'error');
+          document.getElementById('getResult').style.display = 'none';
+          return;
+        }
+
+        const b = await res.json();
+        document.getElementById('getResult').style.display = 'block';
+        document.getElementById('getResultContent').innerHTML = `
+          <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);font-weight:700;margin-bottom:8px">Nəticə — ID: ${b.id}</div>
+          <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:6px">${escHtml(b.title)}</div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:10px">✍️ ${escHtml(b.author)}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:${b.description ? '10px' : '0'}">
+            <span class="meta-tag tag-year">📅 ${b.year}</span>
+            ${b.genre ? `<span class="meta-tag tag-genre">🏷️ ${escHtml(b.genre)}</span>` : ''}
+          </div>
+          ${b.description ? `<div style="font-size:12.5px;color:var(--muted);line-height:1.6;border-top:1px solid var(--border);padding-top:10px;margin-top:10px">${escHtml(b.description)}</div>` : ''}
+        `;
+        showToast(`Kitab tapıldı!`, 'success');
+      } catch (e) {
+        showToast('Bağlantı xətası!', 'error');
+      }
+    }
+
+    // ──────────────────────────────────────
+    // SƏHFƏ YÜKLƏNƏNDƏ kitabları al
+    // ──────────────────────────────────────
+    loadBooks();
+  </script>
+</body>
+</html>
